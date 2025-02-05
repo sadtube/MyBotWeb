@@ -9,7 +9,6 @@
   <!-- Подключаем Bootstrap CSS для оформления -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Фон страницы – изображение с Unsplash (минималистичный стиль) */
     body {
       background: url('https://source.unsplash.com/1600x900/?abstract,minimal') no-repeat center center fixed;
       background-size: cover;
@@ -82,25 +81,28 @@
 <body>
   <div class="container">
     <h1 class="mb-4">Найди фильм</h1>
-    <!-- Поле ввода для названия фильма -->
     <div class="input-group mb-3">
       <input type="text" id="searchInput" class="form-control" placeholder="Введите название фильма">
       <button class="btn btn-primary" id="searchButton">Найти</button>
     </div>
-    <!-- Блок загрузки -->
     <div id="loading">
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Загрузка...</span>
       </div>
       <p>Подождите, идет поиск источника...</p>
     </div>
-    <!-- Контейнер для результатов поиска -->
     <div id="results" class="row"></div>
   </div>
   <script>
     // Используем TMDB API с вашим ключом
     const API_KEY = "c1743a20004179888de49ed5cc1a5c12";
     const IMG_BASE = "https://image.tmdb.org/t/p/w500";
+
+    // Ручной маппинг для популярных фильмов: название -> id на Кинопоиске
+    const kinopoiskMapping = {
+      "Анора": 5405057,
+      // Добавьте другие фильмы по необходимости
+    };
 
     document.getElementById("searchButton").addEventListener("click", function(){
       const query = document.getElementById("searchInput").value.trim();
@@ -141,14 +143,16 @@
                 col.appendChild(card);
                 resultsDiv.appendChild(col);
 
-                // При клике на карточку имитируем задержку (2 секунды), затем формируем URL
+                // При клике имитируем задержку и затем перенаправляем пользователя:
                 card.addEventListener("click", function(){
                   document.getElementById("loading").style.display = "block";
                   setTimeout(function(){
                     document.getElementById("loading").style.display = "none";
-                    // Формируем URL на Kinopoisk с TMDB id (предположим, что TMDB id совпадает с ID на Kinopoisk)
-                    let originalUrl = "https://www.kinopoisk.ru/film/" + movie.id + "/";
-                    // Меняем доменное имя: вместо "kinopoisk.ru" ставим "kinopoisk.gg"
+                    // Если фильм есть в маппинге, используем id из маппинга, иначе используем TMDB id
+                    let filmId = kinopoiskMapping[movie.title] || movie.id;
+                    // Формируем оригинальную ссылку на Kinopoisk:
+                    let originalUrl = "https://www.kinopoisk.ru/film/" + filmId + "/";
+                    // Меняем домен: вместо "kinopoisk.ru" ставим "kinopoisk.gg"
                     let modifiedUrl = originalUrl.replace("kinopoisk.ru", "kinopoisk.gg");
                     window.open(modifiedUrl, "_blank");
                   }, 2000);
@@ -167,4 +171,3 @@
   </script>
 </body>
 </html>
-
