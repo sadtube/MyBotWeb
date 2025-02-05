@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Выбор фильма</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .movie { margin: 10px; display: inline-block; text-align: center; }
+    .movie img { width: 150px; height: auto; }
+  </style>
+</head>
+<body>
+  <h1>Выбери фильм</h1>
+  <!-- Здесь будут располагаться фильмы -->
+  <div id="movies"></div>
+  <script>
+    // Пример данных. В будущем сюда можно подставить данные с API.
+    const movies = [
+      { title: "Фильм 1", cover: "https://via.placeholder.com/150", url: "https://example.com/movie1" },
+      { title: "Фильм 2", cover: "https://via.placeholder.com/150", url: "https://example.com/movie2" }
+    ];
+
+    const moviesDiv = document.getElementById('movies');
+    movies.forEach(movie => {
+      const movieElem = document.createElement('div');
+      movieElem.className = 'movie';
+      movieElem.innerHTML = `<a href="${movie.url}" target="_blank">
+        <img src="${movie.cover}" alt="${movie.title}">
+        <p>${movie.title}</p>
+      </a>`;
+      moviesDiv.appendChild(movieElem);
+    });
+  </script>
+</body>
+</html>
+Добавил index.html
