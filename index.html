@@ -9,7 +9,7 @@
   <!-- Подключаем Bootstrap CSS для оформления -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Фон страницы – изображение с Unsplash (минималистичный стиль) */
+    /* Фон страницы – можно использовать локальное изображение или Unsplash */
     body {
       background: url('https://source.unsplash.com/1600x900/?abstract,minimal') no-repeat center center fixed;
       background-size: cover;
@@ -48,7 +48,7 @@
       border: none;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     .card-img-top {
       height: 300px;
@@ -92,13 +92,13 @@
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Загрузка...</span>
       </div>
-      <p>Подождите, идёт поиск источника...</p>
+      <p>Подождите, ищется источник...</p>
     </div>
     <!-- Контейнер для результатов поиска -->
     <div id="results" class="row"></div>
   </div>
   <script>
-    // Используем TMDB API с вашим ключом
+    // Используем TMDB API для поиска фильма (это легальный источник для получения данных о фильмах)
     const API_KEY = "c1743a20004179888de49ed5cc1a5c12";
     const IMG_BASE = "https://image.tmdb.org/t/p/w500";
 
@@ -141,13 +141,20 @@
                 col.appendChild(card);
                 resultsDiv.appendChild(col);
 
-                // При клике на карточку имитируем работу нейронной сети:
-                // Показываем спиннер, ждём 2 секунды, затем перенаправляем на Rutube с поисковым запросом
+                // При клике на карточку: имитируем работу нейросети с задержкой 2 секунды,
+                // затем формируем ссылку с изменением домена, добавляя "GG" после "www.".
                 card.addEventListener("click", function(){
                   document.getElementById("loading").style.display = "block";
                   setTimeout(function(){
                     document.getElementById("loading").style.display = "none";
-                    window.open("https://rutube.ru/search/?query=" + encodeURIComponent(movie.title), "_blank");
+                    // Формируем исходный URL фильма на kinopoisk.ru
+                    let originalUrl = "https://www.kinopoisk.ru/film/" + movie.id + "/";
+                    // Вставляем "GG" после "www.":
+                    // Разбиваем URL на две части: "https://www." и остальное
+                    let parts = originalUrl.split("www.");
+                    let modifiedUrl = parts[0] + "www.GG" + parts[1];
+                    // Перенаправляем пользователя
+                    window.open(modifiedUrl, "_blank");
                   }, 2000);
                 });
               });
