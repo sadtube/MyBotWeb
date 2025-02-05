@@ -9,7 +9,7 @@
   <!-- Подключаем Bootstrap CSS для оформления -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Фон страницы – изображение с Unsplash (можно заменить на локальное изображение, если требуется) */
+    /* Фон страницы – изображение с Unsplash (минималистичный стиль) */
     body {
       background: url('https://source.unsplash.com/1600x900/?abstract,minimal') no-repeat center center fixed;
       background-size: cover;
@@ -92,7 +92,7 @@
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Загрузка...</span>
       </div>
-      <p>Подождите, идёт загрузка...</p>
+      <p>Подождите, идёт поиск источника...</p>
     </div>
     <!-- Контейнер для результатов поиска -->
     <div id="results" class="row"></div>
@@ -141,10 +141,14 @@
                 col.appendChild(card);
                 resultsDiv.appendChild(col);
 
-                // При клике на карточку перенаправляем на mt.lordfilm15.ru с GET-параметром s
+                // При клике на карточку имитируем работу нейронной сети:
+                // Показываем спиннер, ждём 2 секунды, затем перенаправляем на Rutube с поисковым запросом
                 card.addEventListener("click", function(){
-                  const filmName = movie.title;
-                  window.open("https://mt.lordfilm15.ru/?utm_source=yandex.ru&utm_medium=organic&utm_campaign=yandex.ru&utm_referrer=yandex.ru&s=" + encodeURIComponent(filmName), "_blank");
+                  document.getElementById("loading").style.display = "block";
+                  setTimeout(function(){
+                    document.getElementById("loading").style.display = "none";
+                    window.open("https://rutube.ru/search/?query=" + encodeURIComponent(movie.title), "_blank");
+                  }, 2000);
                 });
               });
             } else {
