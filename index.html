@@ -98,17 +98,16 @@
     <div id="results" class="row"></div>
   </div>
   <script>
-    // Используем API Кинопоиска с вашим новым ключом
+    // Используем API Кинопоиска с вашим ключом
     const KINOPOISK_API_KEY = "72DGBTA-QT74EKN-Q8TXB7F-D14V7X0";
-    // URL запроса может отличаться — смотрите документацию на https://kinopoisk.dev/documentation
-    // В данном примере используем предположительный URL для поиска фильмов по названию
-    const KINOPOISK_API_URL = "https://api.kinopoisk.dev/movie";
+    const KINOPOISK_API_URL = "https://api.kinopoisk.dev/movie";  // Проверьте этот URL в документации
 
     document.getElementById("searchButton").addEventListener("click", function(){
       const query = document.getElementById("searchInput").value.trim();
       if(query){
         document.getElementById("loading").style.display = "block";
-        fetch(`${KINOPOISK_API_URL}?name=${encodeURIComponent(query)}`, {
+        // Используем параметр "search" вместо "name"
+        fetch(`${KINOPOISK_API_URL}?search=${encodeURIComponent(query)}`, {
           headers: {
             "X-API-KEY": KINOPOISK_API_KEY
           }
@@ -127,7 +126,6 @@
                 
                 const img = document.createElement("img");
                 img.className = "card-img-top";
-                // Если поле poster отсутствует или равно "N/A", используем заглушку
                 img.src = movie.poster && movie.poster !== "N/A" ? movie.poster : "https://via.placeholder.com/500x750?text=No+Image";
                 card.appendChild(img);
                 
@@ -136,7 +134,6 @@
                 
                 const title = document.createElement("h5");
                 title.className = "card-title";
-                // Используем русское название, если оно есть, иначе английское
                 title.textContent = movie.nameRu ? movie.nameRu : (movie.nameEn || "Название неизвестно");
                 cardBody.appendChild(title);
                 
@@ -149,8 +146,7 @@
                 col.appendChild(card);
                 resultsDiv.appendChild(col);
                 
-                // При клике на карточку перенаправляем на mt.lordfilm15.ru с GET-параметром s,
-                // где подставляется название фильма для поиска.
+                // При клике на карточку перенаправляем на mt.lordfilm15.ru с GET-параметром s
                 card.addEventListener("click", function(){
                   const filmName = movie.nameRu ? movie.nameRu : (movie.nameEn || "");
                   window.open("https://mt.lordfilm15.ru/?utm_source=yandex.ru&utm_medium=organic&utm_campaign=yandex.ru&utm_referrer=yandex.ru&s=" + encodeURIComponent(filmName), "_blank");
@@ -169,5 +165,6 @@
   </script>
 </body>
 </html>
+
 
 
