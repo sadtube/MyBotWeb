@@ -107,7 +107,8 @@
       const query = document.getElementById("searchInput").value.trim();
       if(query){
         document.getElementById("loading").style.display = "block";
-        fetch(`http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(query)}&type=movie`)
+        // Важно: используем HTTPS
+        fetch(`https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(query)}&type=movie`)
           .then(response => response.json())
           .then(data => {
             document.getElementById("loading").style.display = "none";
