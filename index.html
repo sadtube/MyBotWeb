@@ -9,6 +9,7 @@
   <!-- Подключаем Bootstrap CSS для оформления -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    /* Фон страницы – изображение с Unsplash (минималистичный стиль) */
     body {
       background: url('https://source.unsplash.com/1600x900/?abstract,minimal') no-repeat center center fixed;
       background-size: cover;
@@ -22,6 +23,9 @@
       padding: 20px;
       border-radius: 10px;
       animation: fadeIn 1s ease-out;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
     }
     h1 {
       font-weight: 700;
@@ -31,6 +35,8 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: space-around;
+      margin-top: 20px;
+      flex-grow: 1;
     }
     .movie-card {
       margin-bottom: 20px;
@@ -68,6 +74,12 @@
       margin-bottom: 20px;
       animation: fadeIn 0.5s ease;
     }
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.9em;
+      opacity: 0.7;
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -81,27 +93,32 @@
 <body>
   <div class="container">
     <h1 class="mb-4">Найди фильм</h1>
+    <!-- Поле ввода для названия фильма -->
     <div class="input-group mb-3">
       <input type="text" id="searchInput" class="form-control" placeholder="Введите название фильма">
       <button class="btn btn-primary" id="searchButton">Найти</button>
     </div>
+    <!-- Блок загрузки -->
     <div id="loading">
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Загрузка...</span>
       </div>
       <p>Подождите, идет поиск источника...</p>
     </div>
+    <!-- Контейнер для результатов поиска -->
     <div id="results" class="row"></div>
+    <!-- Нижний колонтитул с водяным знаком -->
+    <footer>© @sadykov1</footer>
   </div>
   <script>
     // Используем TMDB API с вашим ключом
     const API_KEY = "c1743a20004179888de49ed5cc1a5c12";
     const IMG_BASE = "https://image.tmdb.org/t/p/w500";
-
-    // Ручной маппинг для популярных фильмов: название -> id на Кинопоиске
+    
+    // Ручной маппинг популярных фильмов: "Название фильма" => "ID на Кинопоиске"
     const kinopoiskMapping = {
-      "Анора": 5405057,
-      // Добавьте другие фильмы по необходимости
+      "Анора": "5405057"
+      // Добавьте другие фильмы по мере необходимости
     };
 
     document.getElementById("searchButton").addEventListener("click", function(){
@@ -120,41 +137,43 @@
                 col.className = "col-md-3 movie-card";
                 const card = document.createElement("div");
                 card.className = "card h-100";
-
+                
                 const img = document.createElement("img");
                 img.className = "card-img-top";
                 img.src = movie.poster_path ? IMG_BASE + movie.poster_path : "https://via.placeholder.com/500x750?text=No+Image";
                 card.appendChild(img);
-
+                
                 const cardBody = document.createElement("div");
                 cardBody.className = "card-body";
-
+                
                 const title = document.createElement("h5");
                 title.className = "card-title";
                 title.textContent = movie.title;
                 cardBody.appendChild(title);
-
+                
                 const release = document.createElement("p");
                 release.className = "card-text";
                 release.textContent = "Год: " + (movie.release_date ? movie.release_date.split("-")[0] : "неизвестно");
                 cardBody.appendChild(release);
-
+                
                 card.appendChild(cardBody);
                 col.appendChild(card);
                 resultsDiv.appendChild(col);
-
-                // При клике имитируем задержку и затем перенаправляем пользователя:
+                
+                // Обработчик клика: имитация задержки (2 секунды)
                 card.addEventListener("click", function(){
                   document.getElementById("loading").style.display = "block";
                   setTimeout(function(){
                     document.getElementById("loading").style.display = "none";
-                    // Если фильм есть в маппинге, используем id из маппинга, иначе используем TMDB id
-                    let filmId = kinopoiskMapping[movie.title] || movie.id;
-                    // Формируем оригинальную ссылку на Kinopoisk:
-                    let originalUrl = "https://www.kinopoisk.ru/film/" + filmId + "/";
-                    // Меняем домен: вместо "kinopoisk.ru" ставим "kinopoisk.gg"
-                    let modifiedUrl = originalUrl.replace("kinopoisk.ru", "kinopoisk.gg");
-                    window.open(modifiedUrl, "_blank");
+                    // Если фильм найден в маппинге, используем соответствующий id; иначе перенаправляем на Google поиск
+                    if(kinopoiskMapping[movie.title]){
+                      let modifiedUrl = "https://www.kinopoisk.gg/film/" + kinopoiskMapping[movie.title] + "/";
+                      window.open(modifiedUrl, "_blank");
+                    } else {
+                      // Формируем запрос для Google поиска: например, "смотреть фильм <название>"
+                      let googleUrl = "https://www.google.com/search?q=" + encodeURIComponent("смотреть фильм " + movie.title);
+                      window.open(googleUrl, "_blank");
+                    }
                   }, 2000);
                 });
               });
