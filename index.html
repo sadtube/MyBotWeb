@@ -3,35 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Выбор фильма</title>
+  <title>Поиск фильма</title>
+  <!-- Подключаем Bootstrap CSS для красивого оформления -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    .movie { margin: 10px; display: inline-block; text-align: center; }
-    .movie img { width: 150px; height: auto; }
+    body {
+      padding: 20px;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    #movies {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+    }
+    .movie-card {
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .movie-card:hover {
+      transform: scale(1.02);
+    }
+    .card-img-top {
+      height: 300px;
+      object-fit: cover;
+    }
+    .card-body {
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <h1>Выбери фильм</h1>
-  <!-- Здесь будут располагаться фильмы -->
-  <div id="movies"></div>
+  <div class="container">
+    <h1 class="mb-4">Найди фильм</h1>
+    <!-- Поле ввода для названия фильма -->
+    <div class="input-group mb-3">
+      <input type="text" id="searchInput" class="form-control" placeholder="Введите название фильма">
+      <button class="btn btn-primary" id="searchButton">Найти</button>
+    </div>
+    <!-- Здесь будут отображаться результаты -->
+    <div id="results" class="row"></div>
+  </div>
   <script>
-    // Пример данных. В будущем сюда можно подставить данные с API.
-    const movies = [
-      { title: "Фильм 1", cover: "https://via.placeholder.com/150", url: "https://example.com/movie1" },
-      { title: "Фильм 2", cover: "https://via.placeholder.com/150", url: "https://example.com/movie2" }
-    ];
+    // Заменённый API-ключ (используй свой реальный ключ):
+    const API_KEY = "c1743a20004179888de49ed5cc1a5c12";
+    const IMG_BASE = "https://image.tmdb.org/t/p/w500";
 
-    const moviesDiv = document.getElementById('movies');
-    movies.forEach(movie => {
-      const movieElem = document.createElement('div');
-      movieElem.className = 'movie';
-      movieElem.innerHTML = `<a href="${movie.url}" target="_blank">
-        <img src="${movie.cover}" alt="${movie.title}">
-        <p>${movie.title}</p>
-      </a>`;
-      moviesDiv.appendChild(movieElem);
+    document.getElementById("searchButton").addEventListener("click", function(){
+      const query = document.getElementById("searchInput").value.trim();
+      if(query){
+        fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=ru-RU&query=${encodeURIComponent(query)}`)
+          .then(response => response.json())
+          .then(data => {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = ""; // очищаем предыдущие результаты
+            data.results.forEach(movie => {
+              // Создаем карточку для каждого фильма
+              const col = document.createElement("div");
+              col.className = "col-md-3 movie-card";
+              const card = document.createElement("div");
+              card.className = "card h-100";
+              
+              // Изображение фильма (обложка)
+              const img = document.createElement("img");
+              img.className = "card-img-top";
+              img.src = movie.poster_path ? IMG_BASE + movie.poster_path : "https://via.placeholder.com/500x750?text=No+Image";
+              card.appendChild(img);
+              
+              // Тело карточки
+              const cardBody = document.createElement("div");
+              cardBody.className = "card-body";
+              
+              // Заголовок с названием фильма
+              const title = document.createElement("h5");
+              title.className = "card-title";
+              title.textContent = movie.title;
+              cardBody.appendChild(title);
+              
+              // Параграф с годом выпуска
+              const release = document.createElement("p");
+              release.className = "card-text";
+              release.textContent = "Год: " + (movie.release_date ? movie.release_date.split("-")[0] : "неизвестно");
+              cardBody.appendChild(release);
+              
+              card.appendChild(cardBody);
+              col.appendChild(card);
+              resultsDiv.appendChild(col);
+              
+              // При клике на карточку открываем сайт с фильмом (пример ссылки)
+              card.addEventListener("click", function(){
+                // Здесь можно заменить ссылку на реальный сайт для просмотра фильма
+                window.open("https://example.com/watch?movie=" + encodeURIComponent(movie.title), "_blank");
+              });
+            });
+          })
+          .catch(err => console.error(err));
+      }
     });
   </script>
 </body>
 </html>
-Добавил index.html
