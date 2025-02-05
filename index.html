@@ -9,7 +9,7 @@
   <!-- Подключаем Bootstrap CSS для оформления -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Фон страницы – можно использовать локальное изображение или Unsplash */
+    /* Фон страницы – изображение с Unsplash (минималистичный стиль) */
     body {
       background: url('https://source.unsplash.com/1600x900/?abstract,minimal') no-repeat center center fixed;
       background-size: cover;
@@ -92,13 +92,13 @@
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Загрузка...</span>
       </div>
-      <p>Подождите, ищется источник...</p>
+      <p>Подождите, идёт поиск источника...</p>
     </div>
     <!-- Контейнер для результатов поиска -->
     <div id="results" class="row"></div>
   </div>
   <script>
-    // Используем TMDB API для поиска фильма (это легальный источник для получения данных о фильмах)
+    // Используем TMDB API с вашим ключом
     const API_KEY = "c1743a20004179888de49ed5cc1a5c12";
     const IMG_BASE = "https://image.tmdb.org/t/p/w500";
 
@@ -141,19 +141,18 @@
                 col.appendChild(card);
                 resultsDiv.appendChild(col);
 
-                // При клике на карточку: имитируем работу нейросети с задержкой 2 секунды,
-                // затем формируем ссылку с изменением домена, добавляя "GG" после "www.".
+                // При клике на карточку имитируем работу нейросети:
+                // Ждем 2 секунды, затем формируем URL, добавляя "GG" после "www." в исходном URL Kinopoisk.
                 card.addEventListener("click", function(){
                   document.getElementById("loading").style.display = "block";
                   setTimeout(function(){
                     document.getElementById("loading").style.display = "none";
-                    // Формируем исходный URL фильма на kinopoisk.ru
+                    // Формируем исходный URL на Kinopoisk.
+                    // Для примера предполагаем, что идентификатор фильма TMDB совпадает с нужным (но для точного соответствия требуется маппинг).
                     let originalUrl = "https://www.kinopoisk.ru/film/" + movie.id + "/";
                     // Вставляем "GG" после "www.":
-                    // Разбиваем URL на две части: "https://www." и остальное
                     let parts = originalUrl.split("www.");
                     let modifiedUrl = parts[0] + "www.GG" + parts[1];
-                    // Перенаправляем пользователя
                     window.open(modifiedUrl, "_blank");
                   }, 2000);
                 });
