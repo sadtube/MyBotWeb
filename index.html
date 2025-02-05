@@ -9,8 +9,10 @@
   <!-- Подключаем Bootstrap CSS для оформления -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Фон страницы – изображение с Unsplash (минималистичный стиль) */
+    /* Если Unsplash недоступен, можно использовать локальный фон (background.jpg) */
     body {
+      /* Раскомментируйте следующую строку для локального фона: */
+      /* background: url('background.jpg') no-repeat center center fixed; */
       background: url('https://source.unsplash.com/1600x900/?abstract,minimal') no-repeat center center fixed;
       background-size: cover;
       font-family: 'Montserrat', sans-serif;
@@ -18,7 +20,6 @@
       padding: 20px;
       margin: 0;
     }
-    /* Контейнер с полупрозрачным фоном и анимацией появления */
     .container {
       background: rgba(0, 0, 0, 0.65);
       padding: 20px;
@@ -29,8 +30,7 @@
       font-weight: 700;
       animation: slideIn 1s ease-out;
     }
-    /* Стили для карточек фильмов */
-    #movies {
+    #movies, #results {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-around;
@@ -59,21 +59,18 @@
     .card-body {
       text-align: center;
     }
-    /* Эффект для кнопки "Найти" */
     #searchButton {
       transition: transform 0.3s ease;
     }
     #searchButton:hover {
       transform: scale(1.05);
     }
-    /* Стили для спиннера загрузки с анимацией */
     #loading {
       display: none;
       text-align: center;
       margin-bottom: 20px;
       animation: fadeIn 0.5s ease;
     }
-    /* Анимации */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -103,53 +100,56 @@
     <div id="results" class="row"></div>
   </div>
   <script>
-    // Реальный API-ключ TMDB
-    const API_KEY = "c1743a20004179888de49ed5cc1a5c12";
-    const IMG_BASE = "https://image.tmdb.org/t/p/w500";
-
+    // Используем OMDb API вместо TMDB
+    const OMDB_API_KEY = "18b51a09";
+    
     document.getElementById("searchButton").addEventListener("click", function(){
       const query = document.getElementById("searchInput").value.trim();
       if(query){
         document.getElementById("loading").style.display = "block";
-        fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=ru-RU&query=${encodeURIComponent(query)}`)
+        fetch(`http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=${encodeURIComponent(query)}&type=movie`)
           .then(response => response.json())
           .then(data => {
             document.getElementById("loading").style.display = "none";
             const resultsDiv = document.getElementById("results");
             resultsDiv.innerHTML = "";
-            data.results.forEach(movie => {
-              const col = document.createElement("div");
-              col.className = "col-md-3 movie-card";
-              const card = document.createElement("div");
-              card.className = "card h-100";
-              
-              const img = document.createElement("img");
-              img.className = "card-img-top";
-              img.src = movie.poster_path ? IMG_BASE + movie.poster_path : "https://via.placeholder.com/500x750?text=No+Image";
-              card.appendChild(img);
-              
-              const cardBody = document.createElement("div");
-              cardBody.className = "card-body";
-              
-              const title = document.createElement("h5");
-              title.className = "card-title";
-              title.textContent = movie.title;
-              cardBody.appendChild(title);
-              
-              const release = document.createElement("p");
-              release.className = "card-text";
-              release.textContent = "Год: " + (movie.release_date ? movie.release_date.split("-")[0] : "неизвестно");
-              cardBody.appendChild(release);
-              
-              card.appendChild(cardBody);
-              col.appendChild(card);
-              resultsDiv.appendChild(col);
-              
-              // Обработчик клика: перенаправляем на mt.lordfilm15.ru с поисковым запросом
-              card.addEventListener("click", function(){
-                window.open("https://mt.lordfilm15.ru/?utm_source=yandex.ru&utm_medium=organic&utm_campaign=yandex.ru&utm_referrer=yandex.ru&s=" + encodeURIComponent(movie.title), "_blank");
+            if(data.Response === "True"){
+              data.Search.forEach(movie => {
+                const col = document.createElement("div");
+                col.className = "col-md-3 movie-card";
+                const card = document.createElement("div");
+                card.className = "card h-100";
+                
+                const img = document.createElement("img");
+                img.className = "card-img-top";
+                img.src = movie.Poster !== "N/A" ? movie.Poster : "https://via.placeholder.com/500x750?text=No+Image";
+                card.appendChild(img);
+                
+                const cardBody = document.createElement("div");
+                cardBody.className = "card-body";
+                
+                const title = document.createElement("h5");
+                title.className = "card-title";
+                title.textContent = movie.Title;
+                cardBody.appendChild(title);
+                
+                const release = document.createElement("p");
+                release.className = "card-text";
+                release.textContent = "Год: " + (movie.Year || "неизвестно");
+                cardBody.appendChild(release);
+                
+                card.appendChild(cardBody);
+                col.appendChild(card);
+                resultsDiv.appendChild(col);
+                
+                // При клике на карточку перенаправляем на mt.lordfilm15.ru с GET-параметром s
+                card.addEventListener("click", function(){
+                  window.open("https://mt.lordfilm15.ru/?utm_source=yandex.ru&utm_medium=organic&utm_campaign=yandex.ru&utm_referrer=yandex.ru&s=" + encodeURIComponent(movie.Title), "_blank");
+                });
               });
-            });
+            } else {
+              resultsDiv.innerHTML = "<p>Фильмы не найдены</p>";
+            }
           })
           .catch(err => {
             console.error("Ошибка при поиске:", err);
@@ -160,6 +160,5 @@
   </script>
 </body>
 </html>
-
 
 
