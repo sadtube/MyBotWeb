@@ -4,22 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Поиск фильма</title>
+  <!-- Подключаем Google Fonts для оригинального шрифта -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <!-- Подключаем Bootstrap CSS для красивого оформления -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Фон страницы – изображение с Unsplash для минималистичного оформления */
+    /* Фон страницы – изображение с Unsplash (минималистичный стиль) */
     body {
       background: url('https://source.unsplash.com/1600x900/?abstract,minimal') no-repeat center center fixed;
       background-size: cover;
-      font-family: Arial, sans-serif;
+      font-family: 'Montserrat', sans-serif;
       color: #fff;
       padding: 20px;
     }
     /* Контейнер с полупрозрачным фоном для улучшения читаемости */
     .container {
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.65);
       padding: 20px;
       border-radius: 10px;
+    }
+    h1 {
+      font-weight: 700;
     }
     #movies {
       display: flex;
@@ -32,11 +37,15 @@
       transition: transform 0.2s;
     }
     .movie-card:hover {
-      transform: scale(1.02);
+      transform: scale(1.05);
     }
     .card {
       background: rgba(255, 255, 255, 0.9);
       color: #333;
+      border: none;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     .card-img-top {
       height: 300px;
@@ -44,6 +53,12 @@
     }
     .card-body {
       text-align: center;
+    }
+    /* Стили для спиннера загрузки */
+    #loading {
+      display: none;
+      text-align: center;
+      margin-bottom: 20px;
     }
   </style>
 </head>
@@ -55,65 +70,18 @@
       <input type="text" id="searchInput" class="form-control" placeholder="Введите название фильма">
       <button class="btn btn-primary" id="searchButton">Найти</button>
     </div>
-    <!-- Здесь будут отображаться результаты -->
+    <!-- Блок для отображения анимации загрузки -->
+    <div id="loading">
+      <div class="spinner-border text-light" role="status">
+        <span class="visually-hidden">Загрузка...</span>
+      </div>
+      <p>Подождите, идёт загрузка...</p>
+    </div>
+    <!-- Здесь будут отображаться результаты поиска -->
     <div id="results" class="row"></div>
   </div>
   <script>
-    // Используем реальный API-ключ TMDB
+    // Реальный API-ключ TMDB
     const API_KEY = "c1743a20004179888de49ed5cc1a5c12";
-    const IMG_BASE = "https://image.tmdb.org/t/p/w500";
-
-    document.getElementById("searchButton").addEventListener("click", function(){
-      const query = document.getElementById("searchInput").value.trim();
-      if(query){
-        fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=ru-RU&query=${encodeURIComponent(query)}`)
-          .then(response => response.json())
-          .then(data => {
-            const resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = ""; // очищаем предыдущие результаты
-            data.results.forEach(movie => {
-              // Создаем карточку для каждого фильма
-              const col = document.createElement("div");
-              col.className = "col-md-3 movie-card";
-              const card = document.createElement("div");
-              card.className = "card h-100";
-              
-              // Изображение фильма (обложка)
-              const img = document.createElement("img");
-              img.className = "card-img-top";
-              img.src = movie.poster_path ? IMG_BASE + movie.poster_path : "https://via.placeholder.com/500x750?text=No+Image";
-              card.appendChild(img);
-              
-              // Тело карточки
-              const cardBody = document.createElement("div");
-              cardBody.className = "card-body";
-              
-              // Заголовок с названием фильма
-              const title = document.createElement("h5");
-              title.className = "card-title";
-              title.textContent = movie.title;
-              cardBody.appendChild(title);
-              
-              // Параграф с годом выпуска
-              const release = document.createElement("p");
-              release.className = "card-text";
-              release.textContent = "Год: " + (movie.release_date ? movie.release_date.split("-")[0] : "неизвестно");
-              cardBody.appendChild(release);
-              
-              card.appendChild(cardBody);
-              col.appendChild(card);
-              resultsDiv.appendChild(col);
-              
-              // При клике на карточку открываем сайт mt.lordfilm15.ru с поисковым запросом
-              card.addEventListener("click", function(){
-                window.open("https://mt.lordfilm15.ru/?utm_source=yandex.ru&utm_medium=organic&utm_campaign=yandex.ru&utm_referrer=yandex.ru&s=" + encodeURIComponent(movie.title), "_blank");
-              });
-            });
-          })
-          .catch(err => console.error(err));
-      }
-    });
-  </script>
-</body>
-</html>
+    const IMG_BASE = "ht
 
