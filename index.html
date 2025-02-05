@@ -83,5 +83,67 @@
   <script>
     // Реальный API-ключ TMDB
     const API_KEY = "c1743a20004179888de49ed5cc1a5c12";
-    const IMG_BASE = "ht
+    const IMG_BASE = "https://image.tmdb.org/t/p/w500";
+
+    document.getElementById("searchButton").addEventListener("click", function(){
+      const query = document.getElementById("searchInput").value.trim();
+      if(query){
+        // Показываем анимацию загрузки
+        document.getElementById("loading").style.display = "block";
+        fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=ru-RU&query=${encodeURIComponent(query)}`)
+          .then(response => response.json())
+          .then(data => {
+            // Скрываем анимацию загрузки
+            document.getElementById("loading").style.display = "none";
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = ""; // очищаем предыдущие результаты
+            data.results.forEach(movie => {
+              // Создаем карточку для каждого фильма
+              const col = document.createElement("div");
+              col.className = "col-md-3 movie-card";
+              const card = document.createElement("div");
+              card.className = "card h-100";
+              
+              // Изображение фильма (обложка)
+              const img = document.createElement("img");
+              img.className = "card-img-top";
+              img.src = movie.poster_path ? IMG_BASE + movie.poster_path : "https://via.placeholder.com/500x750?text=No+Image";
+              card.appendChild(img);
+              
+              // Тело карточки
+              const cardBody = document.createElement("div");
+              cardBody.className = "card-body";
+              
+              // Заголовок с названием фильма
+              const title = document.createElement("h5");
+              title.className = "card-title";
+              title.textContent = movie.title;
+              cardBody.appendChild(title);
+              
+              // Параграф с годом выпуска
+              const release = document.createElement("p");
+              release.className = "card-text";
+              release.textContent = "Год: " + (movie.release_date ? movie.release_date.split("-")[0] : "неизвестно");
+              cardBody.appendChild(release);
+              
+              card.appendChild(cardBody);
+              col.appendChild(card);
+              resultsDiv.appendChild(col);
+              
+              // При клике на карточку открываем сайт mt.lordfilm15.ru с поисковым запросом
+              card.addEventListener("click", function(){
+                window.open("https://mt.lordfilm15.ru/?utm_source=yandex.ru&utm_medium=organic&utm_campaign=yandex.ru&utm_referrer=yandex.ru&s=" + encodeURIComponent(movie.title), "_blank");
+              });
+            });
+          })
+          .catch(err => {
+            console.error(err);
+            document.getElementById("loading").style.display = "none";
+          });
+      }
+    });
+  </script>
+</body>
+</html>
+
 
