@@ -92,7 +92,7 @@
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Загрузка...</span>
       </div>
-      <p>Подождите, идёт поиск источника...</p>
+      <p>Подождите, идет поиск источника...</p>
     </div>
     <!-- Контейнер для результатов поиска -->
     <div id="results" class="row"></div>
@@ -141,18 +141,15 @@
                 col.appendChild(card);
                 resultsDiv.appendChild(col);
 
-                // При клике на карточку имитируем работу нейросети:
-                // Ждем 2 секунды, затем формируем URL, добавляя "GG" после "www." в исходном URL Kinopoisk.
+                // При клике на карточку имитируем задержку (2 секунды), затем формируем URL
                 card.addEventListener("click", function(){
                   document.getElementById("loading").style.display = "block";
                   setTimeout(function(){
                     document.getElementById("loading").style.display = "none";
-                    // Формируем исходный URL на Kinopoisk.
-                    // Для примера предполагаем, что идентификатор фильма TMDB совпадает с нужным (но для точного соответствия требуется маппинг).
+                    // Формируем URL на Kinopoisk с TMDB id (предположим, что TMDB id совпадает с ID на Kinopoisk)
                     let originalUrl = "https://www.kinopoisk.ru/film/" + movie.id + "/";
-                    // Вставляем "GG" после "www.":
-                    let parts = originalUrl.split("www.");
-                    let modifiedUrl = parts[0] + "www.GG" + parts[1];
+                    // Меняем доменное имя: вместо "kinopoisk.ru" ставим "kinopoisk.gg"
+                    let modifiedUrl = originalUrl.replace("kinopoisk.ru", "kinopoisk.gg");
                     window.open(modifiedUrl, "_blank");
                   }, 2000);
                 });
@@ -170,3 +167,4 @@
   </script>
 </body>
 </html>
+
