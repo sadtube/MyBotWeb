@@ -9,7 +9,7 @@
   <!-- Подключаем Bootstrap CSS для оформления -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Фон страницы – можно использовать локальное изображение или изображение с альтернативного источника */
+    /* Фон страницы – изображение с Unsplash (можно заменить на локальное изображение, если требуется) */
     body {
       background: url('https://source.unsplash.com/1600x900/?abstract,minimal') no-repeat center center fixed;
       background-size: cover;
@@ -48,7 +48,7 @@
       border: none;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     .card-img-top {
       height: 300px;
@@ -98,57 +98,52 @@
     <div id="results" class="row"></div>
   </div>
   <script>
-    // Используем API Кинопоиска с вашим ключом
-    const KINOPOISK_API_KEY = "72DGBTA-QT74EKN-Q8TXB7F-D14V7X0";
-    const KINOPOISK_API_URL = "https://api.kinopoisk.dev/movie";  // Проверьте этот URL в документации
+    // Используем TMDB API с вашим ключом
+    const API_KEY = "c1743a20004179888de49ed5cc1a5c12";
+    const IMG_BASE = "https://image.tmdb.org/t/p/w500";
 
     document.getElementById("searchButton").addEventListener("click", function(){
       const query = document.getElementById("searchInput").value.trim();
       if(query){
         document.getElementById("loading").style.display = "block";
-        // Используем параметр "search" вместо "name"
-        fetch(`${KINOPOISK_API_URL}?search=${encodeURIComponent(query)}`, {
-          headers: {
-            "X-API-KEY": KINOPOISK_API_KEY
-          }
-        })
+        fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=ru-RU&query=${encodeURIComponent(query)}`)
           .then(response => response.json())
           .then(data => {
             document.getElementById("loading").style.display = "none";
             const resultsDiv = document.getElementById("results");
             resultsDiv.innerHTML = "";
-            if(data.docs && data.docs.length > 0){
-              data.docs.forEach(movie => {
+            if(data.results && data.results.length > 0){
+              data.results.forEach(movie => {
                 const col = document.createElement("div");
                 col.className = "col-md-3 movie-card";
                 const card = document.createElement("div");
                 card.className = "card h-100";
-                
+
                 const img = document.createElement("img");
                 img.className = "card-img-top";
-                img.src = movie.poster && movie.poster !== "N/A" ? movie.poster : "https://via.placeholder.com/500x750?text=No+Image";
+                img.src = movie.poster_path ? IMG_BASE + movie.poster_path : "https://via.placeholder.com/500x750?text=No+Image";
                 card.appendChild(img);
-                
+
                 const cardBody = document.createElement("div");
                 cardBody.className = "card-body";
-                
+
                 const title = document.createElement("h5");
                 title.className = "card-title";
-                title.textContent = movie.nameRu ? movie.nameRu : (movie.nameEn || "Название неизвестно");
+                title.textContent = movie.title;
                 cardBody.appendChild(title);
-                
+
                 const release = document.createElement("p");
                 release.className = "card-text";
-                release.textContent = "Год: " + (movie.year || "неизвестно");
+                release.textContent = "Год: " + (movie.release_date ? movie.release_date.split("-")[0] : "неизвестно");
                 cardBody.appendChild(release);
-                
+
                 card.appendChild(cardBody);
                 col.appendChild(card);
                 resultsDiv.appendChild(col);
-                
+
                 // При клике на карточку перенаправляем на mt.lordfilm15.ru с GET-параметром s
                 card.addEventListener("click", function(){
-                  const filmName = movie.nameRu ? movie.nameRu : (movie.nameEn || "");
+                  const filmName = movie.title;
                   window.open("https://mt.lordfilm15.ru/?utm_source=yandex.ru&utm_medium=organic&utm_campaign=yandex.ru&utm_referrer=yandex.ru&s=" + encodeURIComponent(filmName), "_blank");
                 });
               });
@@ -165,6 +160,3 @@
   </script>
 </body>
 </html>
-
-
-
